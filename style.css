@@ -1,0 +1,234 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+  margin: 0; padding: 20px;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  padding: 20px 30px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+input[type="text"] {
+  padding: 8px 12px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  width: calc(50% - 15px);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin-bottom: 10px;
+  resize: vertical;
+}
+
+button {
+  padding: 8px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul#studentList li, ul#presentList li {
+  background: #f9f9f9;
+  margin-bottom: 6px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+#status {
+  font-weight: bold;
+  margin-top: 10px;
+  height: 20px;
+  color: black;
+}
+
+.developer-header {
+  display: flex;
+  align-items: center;
+  background-color: #003366;
+  color: white;
+  padding: 10px 20px;
+  border-bottom: 3px solid #0055aa;
+}
+
+.developer-header .logo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 2px solid white;
+  background-color: white;
+}
+
+
+.developer-header .developer-info h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.developer-header .developer-info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+
+/* Container Styling */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 30px;
+}
+
+/* Inputs and Buttons */
+input[type="text"],
+textarea,
+button {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+}
+
+/* Responsive Lists */
+ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+ul li {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  word-wrap: break-word;
+}
+
+/* Header: Developer Profile */
+.developer-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  background-color: #003366;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.developer-header .logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 10px;
+  background-color: white;
+  border: 2px solid white;
+}
+
+.developer-header .developer-info h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.developer-header .developer-info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Timer Display */
+#timerDisplay {
+  font-weight: bold;
+  font-size: 16px;
+  color: #003366;
+}
+
+/* Make buttons visually distinct */
+button {
+  background-color: #0055aa;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #003f80;
+}
+
+/* Responsive Textarea */
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* Small Screen Fixes */
+@media screen and (max-width: 600px) {
+  .developer-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .developer-header .developer-info h2 {
+    font-size: 18px;
+  }
+
+  .developer-header .developer-info p {
+    font-size: 13px;
+  }
+}
+.remove-btn {
+  background-color: #cc0000;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.remove-btn:hover {
+  background-color: #990000;
+}
+

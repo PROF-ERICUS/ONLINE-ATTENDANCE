@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Attendance System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="developer-header">
+  <img src="vault.jpg" alt="Logo" class="logo" />
+  <div class="developer-info">
+    <h2>ERIC ANDOH</h2>
+    <p>System Developer - Attendance System</p>
+  </div>
+</header>
+
+  <div class="container">
+    <h1>Student Attendance System</h1>
+
+    <button id="toggleViewBtn">Switch to Student View</button>
+
+    <div id="adminSection">
+      <div class="section">
+        <h2>Add Single Student</h2>
+        <input type="text" id="studentName" placeholder="Student Name" />
+        <input type="text" id="studentID" placeholder="Index Number" />
+        <button id="addStudentBtn">Add Student</button>
+        <ul id="studentList"></ul>
+      </div>
+
+      <div class="section">
+        <h2>Add Multiple Students (one per line: Name, Index)</h2>
+        <textarea id="bulkStudents" rows="6" placeholder="John Doe, 12345&#10;Mary Jane, 23456&#10;David Smith, 34567"></textarea><br/>
+        <button id="addBulkBtn">Add Multiple Students</button>
+      </div>
+
+      <div class="section">
+        <h2>Admin Control</h2>
+        <button id="startBtn">Start Attendance</button>
+        <p id="timerDisplay">Attendance not started.</p>
+      </div>
+    </div>
+
+    <div class="section" id="studentSection">
+      <h2>Mark Attendance</h2>
+      <input type="text" id="attendanceID" placeholder="Enter Index Number" />
+      <button id="markAttendanceBtn">Mark Present</button>
+      <p id="status"></p>
+    </div>
+
+    <div class="section">
+      <h2>Present Students</h2>
+      <ul id="presentList"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
