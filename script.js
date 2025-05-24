@@ -1,25 +1,29 @@
 // Data storage
 let studentList = JSON.parse(localStorage.getItem("students")) || [];
-let attendanceToday = [];
+let attendanceToday = JSON.parse(localStorage.getItem("attendanceToday")) || [];
 
 const studentListEl = document.getElementById("studentList");
 const presentListEl = document.getElementById("presentList");
 const statusEl = document.getElementById("status");
+const timerDisplay = document.getElementById("timerDisplay");
 
 let attendanceOpen = false;
 let attendanceTimer;
 const attendanceDuration = 10 * 60 * 1000; // 10 minutes
 
-// Show status message
+// Show status
 function showStatus(message, color = "black") {
   statusEl.textContent = message;
   statusEl.style.color = color;
-  setTimeout(() => {
-    statusEl.textContent = "";
-  }, 3000);
+  setTimeout(() => statusEl.textContent = "", 3000);
 }
 
-// Load existing students to UI
+// Save students
+function saveStudents() {
+  localStorage.setItem("students", JSON.stringify(studentList));
+}
+
+// Load student list
 function loadStudents() {
   studentListEl.innerHTML = "";
   studentList.forEach((student, index) => {
@@ -31,8 +35,10 @@ function loadStudents() {
     studentListEl.appendChild(li);
   });
 }
+
+// Delete student
 function deleteStudent(index) {
-  if (confirm("Are you sure you want to remove this student?")) {
+  if (confirm("Are you sure?")) {
     studentList.splice(index, 1);
     saveStudents();
     loadStudents();
@@ -40,181 +46,148 @@ function deleteStudent(index) {
   }
 }
 
-loadStudents();
-
-// Save students to localStorage
-function saveStudents() {
-  localStorage.setItem("students", JSON.stringify(studentList));
-}
-
-// Add new single student
+// Add single student
 document.getElementById("addStudentBtn").addEventListener("click", () => {
   const name = document.getElementById("studentName").value.trim();
   const id = document.getElementById("studentID").value.trim();
 
-  if (!name || !id) {
-    showStatus("Please enter both Name and Index Number.", "red");
-    return;
-  }
+  if (!name || !id) return showStatus("Enter both Name and Index.", "red");
+  if (studentList.some(s => s.id === id)) return showStatus("Student exists.", "orange");
 
-  if (studentList.some(s => s.id === id)) {
-    showStatus("Student already exists.", "orange");
-    return;
-  }
-
-  const student = { name, id };
-  studentList.push(student);
+  studentList.push({ name, id });
   saveStudents();
-
-  const li = document.createElement("li");
-  li.textContent = `${name} (${id})`;
-  studentListEl.appendChild(li);
-
+  loadStudents();
   document.getElementById("studentName").value = "";
   document.getElementById("studentID").value = "";
-
-  showStatus("Student added successfully.", "green");
+  showStatus("Student added.", "green");
 });
 
 // Bulk add students
 document.getElementById("addBulkBtn").addEventListener("click", () => {
   const bulkText = document.getElementById("bulkStudents").value.trim();
-  if (!bulkText) {
-    showStatus("Please enter students in the textarea.", "red");
-    return;
-  }
+  if (!bulkText) return showStatus("Enter bulk data.", "red");
 
   const lines = bulkText.split('\n');
-  let addedCount = 0;
-  let skippedCount = 0;
+  let added = 0, skipped = 0;
 
   lines.forEach(line => {
-    const parts = line.split(',');
-    if (parts.length !== 2) {
-      skippedCount++;
-      return; // skip invalid format
-    }
-    const name = parts[0].trim();
-    const id = parts[1].trim();
-
-    if (!name || !id) {
-      skippedCount++;
-      return;
-    }
-
-    if (studentList.some(s => s.id === id)) {
-      skippedCount++;
-      return; // skip duplicates
-    }
-
+    const [name, id] = line.split(',').map(x => x.trim());
+    if (!name || !id || studentList.some(s => s.id === id)) return skipped++;
     studentList.push({ name, id });
-    addedCount++;
+    added++;
   });
 
   saveStudents();
   loadStudents();
   document.getElementById("bulkStudents").value = "";
-
-  showStatus(`Added ${addedCount} students. Skipped ${skippedCount} entries.`, "green");
+  showStatus(`Added ${added}, Skipped ${skipped}`, "green");
 });
 
-// Start attendance session
+// Start attendance
 document.getElementById("startBtn").addEventListener("click", () => {
-  if (attendanceOpen) {
-    showStatus("Attendance is already running.", "orange");
-    return;
-  }
-
-  attendanceOpen = true;
-  attendanceToday = [];
-  presentListEl.innerHTML = "";
-  showStatus("Attendance started!", "green");
+  if (attendanceOpen) return showStatus("Attendance already started.", "orange");
 
   const endTime = Date.now() + attendanceDuration;
-
-  attendanceTimer = setInterval(() => {
-    const remaining = endTime - Date.now();
-
-    if (remaining <= 0) {
-      clearInterval(attendanceTimer);
-      attendanceOpen = false;
-      document.getElementById("timerDisplay").textContent = "Attendance closed.";
-      showStatus("Attendance time is over.", "red");
-    } else {
-      const minutes = Math.floor(remaining / 60000);
-      const seconds = Math.floor((remaining % 60000) / 1000);
-      document.getElementById("timerDisplay").textContent = `Time left: ${minutes}m ${seconds}s`;
-    }
-  }, 1000);
+  localStorage.setItem("attendanceEndTime", endTime);
+  localStorage.setItem("attendanceToday", JSON.stringify([]));
+  attendanceToday = [];
+  presentListEl.innerHTML = "";
+  attendanceOpen = true;
+  startTimer(endTime);
+  showStatus("Attendance started!", "green");
 });
 
-// Show present student with date and time
+// Add to present list
 function addToPresentList(student) {
   const now = new Date();
-  const date = now.toLocaleDateString();
-  const time = now.toLocaleTimeString();
-
   const li = document.createElement("li");
-  li.innerHTML = `<strong>${student.name}</strong> (${student.id})<br><small>Marked on: ${date} at ${time}</small>`;
+  li.innerHTML = `<strong>${student.name}</strong> (${student.id})<br><small>Marked on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}</small>`;
   presentListEl.appendChild(li);
 }
 
-// Mark attendance manually by entering index number
+// Mark attendance
 document.getElementById("markAttendanceBtn").addEventListener("click", () => {
-  if (!attendanceOpen) {
-    showStatus("Attendance is not open now.", "red");
-    return;
-  }
+  if (!attendanceOpen) return showStatus("Attendance closed.", "red");
 
   const id = document.getElementById("attendanceID").value.trim();
-  if (!id) {
-    showStatus("Please enter an Index Number.", "red");
-    return;
-  }
-
   const student = studentList.find(s => s.id === id);
-  if (!student) {
-    showStatus("Student not found.", "red");
-    return;
-  }
 
-  if (attendanceToday.some(s => s.id === student.id)) {
-    showStatus(`${student.name} already marked present.`, "orange");
-    return;
-  }
+  if (!id || !student) return showStatus("Student not found.", "red");
+  if (attendanceToday.some(s => s.id === id)) return showStatus(`${student.name} already marked.`, "orange");
 
   attendanceToday.push(student);
+  localStorage.setItem("attendanceToday", JSON.stringify(attendanceToday));
   addToPresentList(student);
-  showStatus(`Marked present: ${student.name}`, "green");
+  showStatus(`Marked: ${student.name}`, "green");
   document.getElementById("attendanceID").value = "";
 });
-// Toggle between admin and student view
-// Default password for admin view
-const ADMIN_PASSWORD = "admin500"; // Change this to your secure password
-let isAdmin = true;
 
+// Timer function
+function startTimer(endTime) {
+  attendanceOpen = true;
+  attendanceTimer = setInterval(() => {
+    const remaining = endTime - Date.now();
+    if (remaining <= 0) {
+      clearInterval(attendanceTimer);
+      attendanceOpen = false;
+      timerDisplay.textContent = "Attendance closed.";
+      localStorage.removeItem("attendanceEndTime");
+      showStatus("Attendance ended.", "red");
+    } else {
+      const m = Math.floor(remaining / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      timerDisplay.textContent = `Time left: ${m}m ${s}s`;
+    }
+  }, 1000);
+}
+
+// Admin toggle
+const ADMIN_PASSWORD = "admin500";
+let isAdmin = true;
 const toggleBtn = document.getElementById("toggleViewBtn");
 const adminSection = document.getElementById("adminSection");
 
 toggleBtn.addEventListener("click", () => {
   if (isAdmin) {
-    // Switch to student view
     adminSection.style.display = "none";
     isAdmin = false;
     toggleBtn.textContent = "Switch to Admin View";
   } else {
-    // Ask for password to switch to admin
-    const password = prompt("Enter admin password:");
-    if (password === ADMIN_PASSWORD) {
+    const pwd = prompt("Enter admin password:");
+    if (pwd === ADMIN_PASSWORD) {
       adminSection.style.display = "block";
       isAdmin = true;
       toggleBtn.textContent = "Switch to Student View";
     } else {
-      alert("Incorrect password. Access denied.");
+      alert("Incorrect password.");
     }
   }
 });
 
+// Print
+document.getElementById("printBtn").addEventListener("click", () => {
+  const printContents = document.getElementById("presentList").outerHTML;
+  const originalContents = document.body.innerHTML;
 
+  document.body.innerHTML = `<h1>Present Students</h1>${printContents}`;
+  window.print();
+  document.body.innerHTML = originalContents;
+  location.reload();
+});
 
+// On load, restore attendance and time
+document.addEventListener("DOMContentLoaded", () => {
+  loadStudents();
 
+  // Restore marked attendance
+  attendanceToday.forEach(student => addToPresentList(student));
+
+  // Restore timer
+  const endTime = parseInt(localStorage.getItem("attendanceEndTime"));
+  if (endTime && Date.now() < endTime) {
+    startTimer(endTime);
+  } else {
+    localStorage.removeItem("attendanceEndTime");
+    attendanceOpen = false;
+  }
+});
