@@ -232,3 +232,24 @@ textarea {
   background-color: #990000;
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  h1, #presentList, #presentList * {
+    visibility: visible;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  #presentList {
+    margin-top: 20px;
+    font-size: 16px;
+  }
+}
+
+
